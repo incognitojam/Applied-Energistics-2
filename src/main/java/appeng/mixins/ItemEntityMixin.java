@@ -1,5 +1,8 @@
 package appeng.mixins;
 
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -68,8 +71,14 @@ public abstract class ItemEntityMixin extends Entity {
         final int i = Mth.floor((this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D);
         final int k = Mth.floor(this.getZ());
 
-        FluidState state = this.level().getFluidState(new BlockPos(j, i, k));
-        boolean isValidFluid = !state.isEmpty() && TransformLogic.canTransformInFluid(self, state);
+        final BlockPos blockPos = new BlockPos(j, i, k);
+        FluidState fluidState = this.level().getFluidState(blockPos);
+        BlockState blockState = this.level().getBlockState(blockPos);
+
+        boolean isValidFluid = !fluidState.isEmpty() && TransformLogic.canTransformInFluid(self, fluidState.getType());
+        if (!isValidFluid && blockState.getBlock() == Blocks.WATER_CAULDRON) {
+            isValidFluid = TransformLogic.canTransformInFluid(self, Fluids.WATER);
+        }
 
         if (level().isClientSide()) {
             if (isValidFluid && this.ae2_delay++ > 30 && AEConfig.instance().isEnableEffects()) {
@@ -81,7 +90,7 @@ public abstract class ItemEntityMixin extends Entity {
         } else {
             if (isValidFluid) {
                 this.ae2_transformTime++;
-                if (this.ae2_transformTime > 60 && !TransformLogic.tryTransform(self, c -> c.isFluid(state))) {
+                if (this.ae2_transformTime > 60 && !TransformLogic.tryTransform(self, c -> c.isFluid(fluidState, blockState))) {
                     this.ae2_transformTime = 0;
                 }
             } else {
