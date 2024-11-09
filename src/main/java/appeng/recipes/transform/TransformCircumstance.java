@@ -18,7 +18,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
@@ -108,7 +111,7 @@ public class TransformCircumstance {
         return false;
     }
 
-    public boolean isFluid(FluidState state) {
+    public boolean isFluid(FluidState fluidState, BlockState blockState) {
         return false;
     }
 
@@ -171,8 +174,8 @@ public class TransformCircumstance {
         }
 
         @Override
-        public boolean isFluid(FluidState state) {
-            return state.is(fluidTag);
+        public boolean isFluid(FluidState fluidState, BlockState blockState) {
+            return fluidState.is(fluidTag) || (fluidTag == FluidTags.WATER && blockState.getBlock() == Blocks.WATER_CAULDRON);
         }
 
         @Override

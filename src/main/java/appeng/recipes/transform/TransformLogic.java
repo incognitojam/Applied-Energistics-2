@@ -27,8 +27,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 public final class TransformLogic {
-    public static boolean canTransformInFluid(ItemEntity entity, FluidState fluid) {
-        return getTransformableItems(entity.level(), fluid.getType()).contains(entity.getItem().getItem());
+    public static boolean canTransformInFluid(ItemEntity entity, Fluid fluid) {
+        return getTransformableItems(entity.level(), fluid).contains(entity.getItem().getItem());
     }
 
     public static boolean canTransformInAnyFluid(ItemEntity entity) {
